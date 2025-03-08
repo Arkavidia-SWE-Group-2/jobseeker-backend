@@ -1,0 +1,21 @@
+app:
+  name: jobseeker-backend
+
+api:
+  prefork: false
+  host: 127.0.0.1
+  port: 8080
+  cors:
+    origins: "*" # seperated by comma
+
+log:
+  level: 6 # supported: 0 (panic) - 6 (trace)
+  format: text # supported: json, text
+
+database:
+  username: postgres
+  password: postgres
+  host: 127.0.0.1
+  port: 5432
+  dbname: jobseeker
+  sslmode: disable # disable/enable

@@ -1,0 +1,7 @@
+bin/
+vendor/
+tmp/
+uploads/
+
+config.yaml
+.env
