@@ -9,6 +9,9 @@ genkey:
 	@openssl rsa -pubout -in keys/private.pem -out keys/public.pem 2>/dev/null
 	@echo "Keys generated"
 
+migrate:
+	@go run cmd/migrate/main.go
+
 help:
 	@echo "Usage: make [target]"
 	@echo ""
@@ -16,6 +19,7 @@ help:
 	@echo "  run       Run the application"
 	@echo "  build     Build the application"
 	@echo "  genkey		 Generate private and public key"
+	@echo "  migrate   Run the migration"
 	@echo "  help      Display this help message"
 
 .DEFAULT_GOAL := help
