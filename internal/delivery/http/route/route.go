@@ -13,6 +13,7 @@ type RouteConfig struct {
 	Api         *fiber.App
 	Middleware  *middleware.Middleware
 	BaseHandler handler.BaseHandler
+	AuthHandler handler.AuthHandler
 }
 
 func Setup(c *RouteConfig) {
@@ -23,4 +24,5 @@ func Setup(c *RouteConfig) {
 	c.Api.Use(c.Middleware.CorsMiddleware())
 
 	NewBaseRoute(c.Api, c.BaseHandler)
+	NewAuthRoute(c.Api, c.AuthHandler)
 }

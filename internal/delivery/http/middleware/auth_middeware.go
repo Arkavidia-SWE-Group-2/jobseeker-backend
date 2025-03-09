@@ -26,7 +26,7 @@ func (m *Middleware) AuthMiddleware(roles ...string) fiber.Handler {
 			return response.NewFailed("Unauthorized", err, nil).Send(ctx)
 		}
 
-		err = m.authUsecase.Verify(ctx, claims.ID)
+		err = m.authUsecase.Verify(ctx.Context(), claims.ID)
 		if err != nil {
 			return response.NewFailed("Unauthorized", err, nil).Send(ctx)
 		}

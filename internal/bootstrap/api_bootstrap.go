@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"jobseeker/internal/delivery/http/handler"
 	"jobseeker/internal/delivery/http/middleware"
+	"jobseeker/internal/delivery/http/repository"
 	"jobseeker/internal/delivery/http/route"
 	"jobseeker/internal/delivery/http/usecase"
 	"jobseeker/internal/pkg/validate"
@@ -27,16 +28,19 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 	/**--------------------------------------------
 	 **  REPOSITORIES
 	 *---------------------------------------------**/
+	userRepo := repository.NewUserRepository(conf.DB)
+	profileRepo := repository.NewProfileRepository(conf.DB)
 
 	/**--------------------------------------------
 	 **  USECASES
 	 *---------------------------------------------**/
-	authUsecase := usecase.NewAuthUsecase()
+	authUsecase := usecase.NewAuthUsecase(conf.DB, userRepo, profileRepo)
 
 	/**--------------------------------------------
 	**  HANDLERS
 	*---------------------------------------------**/
 	baseHandler := handler.NewBaseHandler()
+	authHandler := handler.NewAuthHandler(conf.Validator, conf.Log, authUsecase)
 
 	/**--------------------------------------------
 	**  MIDDLEWARE & ROUTE SETUP
@@ -46,5 +50,6 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 		Api:         conf.Api,
 		Middleware:  middleware,
 		BaseHandler: baseHandler,
+		AuthHandler: authHandler,
 	})
 }
