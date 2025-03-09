@@ -34,7 +34,7 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 	/**--------------------------------------------
 	 **  USECASES
 	 *---------------------------------------------**/
-	authUsecase := usecase.NewAuthUsecase(conf.DB, userRepo, profileRepo)
+	authUsecase := usecase.NewAuthUsecase(conf.DB, conf.JWT, userRepo, profileRepo)
 
 	/**--------------------------------------------
 	**  HANDLERS

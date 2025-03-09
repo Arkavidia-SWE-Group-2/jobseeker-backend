@@ -6,34 +6,56 @@ import (
 	"jobseeker/internal/domain"
 	"jobseeker/internal/entity"
 	"jobseeker/internal/pkg/helper"
+	"jobseeker/pkg/jwt"
 
 	"gorm.io/gorm"
 )
 
 type (
 	AuthUsecase interface {
-		Verify(ctx context.Context, id int) error
+		Verify(ctx context.Context, id string) error
 		Login(ctx context.Context, req domain.AuthLoginRequest) (domain.AuthLoginResponse, error)
 		Register(ctx context.Context, req domain.AuthRegisterRequest) error
 	}
 
 	authUsecase struct {
 		db          *gorm.DB
+		jwt         *jwt.JWT
 		userRepo    repository.UserRepository
 		profileRepo repository.ProfileRepository
 	}
 )
 
-func NewAuthUsecase(db *gorm.DB, userRepo repository.UserRepository, profileRepo repository.ProfileRepository) AuthUsecase {
-	return &authUsecase{db, userRepo, profileRepo}
+func NewAuthUsecase(db *gorm.DB, jwt *jwt.JWT, userRepo repository.UserRepository, profileRepo repository.ProfileRepository) AuthUsecase {
+	return &authUsecase{db, jwt, userRepo, profileRepo}
 }
 
-func (u *authUsecase) Verify(ctx context.Context, id int) error {
+func (u *authUsecase) Verify(ctx context.Context, id string) error {
 	return nil
 }
 
 func (u *authUsecase) Login(ctx context.Context, req domain.AuthLoginRequest) (domain.AuthLoginResponse, error) {
-	panic("unimplemented")
+	res := domain.AuthLoginResponse{}
+
+	var user entity.User
+	if err := u.userRepo.GetByCredential(&user, req.Credential); err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return res, domain.ErrWrongCredential
+		}
+		return res, err
+	}
+
+	if err := helper.ComparePassword(req.Password, user.Password); err != nil {
+		return res, domain.ErrWrongCredential
+	}
+
+	token, err := u.jwt.GenerateToken(jwt.Payload{Sub: user.ID.String()})
+	if err != nil {
+		return res, err
+	}
+	res.Token = token
+
+	return res, nil
 }
 
 func (u *authUsecase) Register(ctx context.Context, req domain.AuthRegisterRequest) error {

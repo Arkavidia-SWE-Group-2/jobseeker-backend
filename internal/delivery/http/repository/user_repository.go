@@ -10,6 +10,7 @@ type (
 	UserRepository interface {
 		Create(tx *gorm.DB, user *entity.User) error
 		ExistsByEmailOrPhone(email, phone string) (bool, error)
+		GetByCredential(user *entity.User, credential string) error
 	}
 
 	userRepository struct {
@@ -35,4 +36,8 @@ func (r *userRepository) ExistsByEmailOrPhone(email, phone string) (bool, error)
 		return false, err
 	}
 	return count > 0, nil
+}
+
+func (r *userRepository) GetByCredential(user *entity.User, credential string) error {
+	return r.db.Where("email = ? OR phone = ?", credential, credential).First(user).Error
 }
