@@ -1,6 +1,15 @@
 package domain
 
+import "github.com/gofiber/fiber/v2"
+
 var AUTH_USER = "AUTH_USER"
+
+/**----------------------
+ * ERROR
+ *------------------------**/
+var (
+	ErrEmailOrPhoneAlreadyExists = fiber.NewError(fiber.StatusBadRequest, "Email or phone already exists")
+)
 
 /**----------------------
  * MESSAGE
