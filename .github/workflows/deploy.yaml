@@ -20,5 +20,6 @@ jobs:
           host: ${{ secrets.PRODUCTION_HOST }}
           username: ${{ secrets.PRODUCTION_USERNAME }}
           password: ${{ secrets.PRODUCTION_PASSWORD }}
+          key: ${{ secrets.PRODUCTION_KEY }}
           port: ${{ secrets.PRODUCTION_PORT }}
           script: bash ~/deploy.sh
