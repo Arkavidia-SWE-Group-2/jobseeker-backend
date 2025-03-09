@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (m *Middleware) AuthMiddleware(roles ...string) fiber.Handler {
+func (m *Middleware) AuthMiddleware() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		token := ctx.Get("Authorization")
 
@@ -29,23 +29,6 @@ func (m *Middleware) AuthMiddleware(roles ...string) fiber.Handler {
 		err = m.authUsecase.Verify(ctx.Context(), claims.ID)
 		if err != nil {
 			return response.NewFailed("Unauthorized", err, nil).Send(ctx)
-		}
-
-		if len(roles) > 0 {
-			role := claims.Role
-			if role == "" {
-				return response.NewFailed("Forbidden", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
-			}
-			isAccepted := false
-			for _, r := range roles {
-				if r == role {
-					isAccepted = true
-					break
-				}
-			}
-			if !isAccepted {
-				return response.NewFailed("Forbidden", fiber.NewError(fiber.StatusForbidden), nil).Send(ctx)
-			}
 		}
 
 		ctx.Locals(domain.AUTH_USER, claims)

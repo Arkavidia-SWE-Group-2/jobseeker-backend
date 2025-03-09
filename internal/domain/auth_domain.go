@@ -9,6 +9,7 @@ var AUTH_USER = "AUTH_USER"
  *------------------------**/
 var (
 	ErrEmailOrPhoneAlreadyExists = fiber.NewError(fiber.StatusBadRequest, "Email or phone already exists")
+	ErrWrongCredential           = fiber.NewError(fiber.StatusBadRequest, "Wrong credential")
 )
 
 /**----------------------
@@ -17,6 +18,9 @@ var (
 var (
 	AUTH_REGISTER_SUCCESS = "Register user success"
 	AUTH_REGISTER_FAILED  = "Register user failed"
+
+	AUTH_LOGIN_SUCCESS = "Login success"
+	AUTH_LOGIN_FAILED  = "Login failed"
 )
 
 /**----------------------

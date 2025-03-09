@@ -28,7 +28,18 @@ func NewAuthHandler(validator *validate.Validator, logger *logrus.Logger, usecas
 }
 
 func (h *authHandler) Login(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+	req := domain.AuthLoginRequest{}
+
+	if err := h.validator.ParseAndValidate(ctx, &req); err != nil {
+		return response.NewFailed(domain.AUTH_LOGIN_FAILED, err, h.logger).Send(ctx)
+	}
+
+	res, err := h.usecase.Login(ctx.Context(), req)
+	if err != nil {
+		return response.NewFailed(domain.AUTH_LOGIN_FAILED, err, h.logger).Send(ctx)
+	}
+
+	return response.NewSuccess(domain.AUTH_LOGIN_SUCCESS, res, nil).Send(ctx)
 }
 
 func (h *authHandler) Register(ctx *fiber.Ctx) error {
