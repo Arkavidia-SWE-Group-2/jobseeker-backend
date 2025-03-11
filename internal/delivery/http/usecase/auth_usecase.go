@@ -49,7 +49,7 @@ func (u *authUsecase) Login(ctx context.Context, req domain.AuthLoginRequest) (d
 		return res, domain.ErrWrongCredential
 	}
 
-	token, err := u.jwt.GenerateToken(jwt.Payload{Sub: user.ID.String()})
+	token, err := u.jwt.GenerateToken(jwt.Payload{Sub: user.ID})
 	if err != nil {
 		return res, err
 	}
