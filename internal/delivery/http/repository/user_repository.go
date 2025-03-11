@@ -8,6 +8,7 @@ import (
 
 type (
 	UserRepository interface {
+		GetUserByID(id string, user *entity.User) error
 		Create(tx *gorm.DB, user *entity.User) error
 		ExistsByEmailOrPhone(email, phone string) (bool, error)
 		GetByCredential(user *entity.User, credential string) error
@@ -20,6 +21,10 @@ type (
 
 func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db}
+}
+
+func (r *userRepository) GetUserByID(id string, user *entity.User) error {
+	return r.db.First(user, id).Error
 }
 
 func (r *userRepository) Create(tx *gorm.DB, user *entity.User) error {

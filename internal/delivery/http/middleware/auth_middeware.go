@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"jobseeker/internal/domain"
 	"jobseeker/internal/pkg/response"
 	"strings"
@@ -15,23 +16,25 @@ func (m *Middleware) AuthMiddleware() fiber.Handler {
 		if token == "" {
 			return response.NewFailed("Unauthorized", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
 		}
-
 		subs := strings.Split(token, "Bearer ")
+		fmt.Println(subs)
 		if len(subs) != 2 {
 			return response.NewFailed("Unauthorized", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
 		}
 
 		claims, err := m.jwt.VerifyToken(subs[1])
 		if err != nil {
-			return response.NewFailed("Unauthorized", err, nil).Send(ctx)
+			m.log.Error(err)
+			return response.NewFailed("Unauthorized", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
 		}
 
-		err = m.authUsecase.Verify(ctx.Context(), claims.ID)
+		user, err := m.authUsecase.Verify(ctx.Context(), claims.ID)
 		if err != nil {
-			return response.NewFailed("Unauthorized", err, nil).Send(ctx)
+			m.log.Error(err)
+			return response.NewFailed("Unauthorized", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
 		}
 
-		ctx.Locals(domain.AUTH_USER, claims)
+		ctx.Locals(domain.AUTH_USER, user)
 		return ctx.Next()
 	}
 }
