@@ -23,6 +23,6 @@ func Setup(c *RouteConfig) {
 	}))
 	c.Api.Use(c.Middleware.CorsMiddleware())
 
-	NewBaseRoute(c.Api, c.BaseHandler)
+	NewBaseRoute(c.Api, c.BaseHandler, c.Middleware)
 	NewAuthRoute(c.Api, c.AuthHandler)
 }
