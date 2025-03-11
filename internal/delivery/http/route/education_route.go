@@ -8,4 +8,8 @@ import (
 )
 
 func NewEducationRoute(api *fiber.App, handler handler.EducationHandler, middleware *middleware.Middleware) {
+	router := api.Group("/educations")
+	{
+		router.Post("/", middleware.AuthMiddleware(), handler.Create)
+	}
 }
