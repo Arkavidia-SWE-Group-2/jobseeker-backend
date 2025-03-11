@@ -8,13 +8,14 @@ import (
 
 type User struct {
 	BaseEntity
-	Email    string `json:"email" gorm:"type:varchar(255);not null;unique"`
-	Phone    string `json:"phone" gorm:"type:varchar(255);not null;unique"`
-	Password string `json:"password" gorm:"type:varchar(255);not null"`
-	Vanity   string `json:"vanity" gorm:"type:varchar(255);unique;not null"`
+	Email    string `json:"email" gorm:"column:email;not null;unique"`
+	Phone    string `json:"phone" gorm:"column:phone;not null;unique"`
+	Password string `json:"password" gorm:"column:password;not null"`
+	Vanity   string `json:"vanity" gorm:"column:vanity;not null;unique"`
 	Timestamp
 
-	Profile *Profile `json:"profile,omitempty" gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Profile   *Profile   `json:"profile,omitempty" gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Education *Education `json:"education,omitempty" gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (u *User) TableName() string {

@@ -30,26 +30,30 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 	 *---------------------------------------------**/
 	userRepo := repository.NewUserRepository(conf.DB)
 	profileRepo := repository.NewProfileRepository(conf.DB)
+	educationRepo := repository.NewEducationRepository(conf.DB)
 
 	/**--------------------------------------------
 	 **  USECASES
 	 *---------------------------------------------**/
 	authUsecase := usecase.NewAuthUsecase(conf.DB, conf.JWT, userRepo, profileRepo)
+	educationUsecase := usecase.NewEducationUsecase(conf.DB, educationRepo)
 
 	/**--------------------------------------------
 	**  HANDLERS
 	*---------------------------------------------**/
 	baseHandler := handler.NewBaseHandler()
 	authHandler := handler.NewAuthHandler(conf.Validator, conf.Log, authUsecase)
+	educationHandler := handler.NewEducationHandler(conf.Validator, conf.Log, educationUsecase)
 
 	/**--------------------------------------------
 	**  MIDDLEWARE & ROUTE SETUP
 	*---------------------------------------------**/
 	middleware := middleware.NewMiddleware(conf.Log, conf.JWT, conf.Config, authUsecase)
 	route.Setup(&route.RouteConfig{
-		Api:         conf.Api,
-		Middleware:  middleware,
-		BaseHandler: baseHandler,
-		AuthHandler: authHandler,
+		Api:              conf.Api,
+		Middleware:       middleware,
+		BaseHandler:      baseHandler,
+		AuthHandler:      authHandler,
+		EducationHandler: educationHandler,
 	})
 }

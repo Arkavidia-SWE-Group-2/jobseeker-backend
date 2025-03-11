@@ -10,10 +10,11 @@ import (
 )
 
 type RouteConfig struct {
-	Api         *fiber.App
-	Middleware  *middleware.Middleware
-	BaseHandler handler.BaseHandler
-	AuthHandler handler.AuthHandler
+	Api              *fiber.App
+	Middleware       *middleware.Middleware
+	BaseHandler      handler.BaseHandler
+	AuthHandler      handler.AuthHandler
+	EducationHandler handler.EducationHandler
 }
 
 func Setup(c *RouteConfig) {
@@ -25,4 +26,5 @@ func Setup(c *RouteConfig) {
 
 	NewBaseRoute(c.Api, c.BaseHandler, c.Middleware)
 	NewAuthRoute(c.Api, c.AuthHandler)
+	NewEducationRoute(c.Api, c.EducationHandler, c.Middleware)
 }
