@@ -13,6 +13,7 @@ import (
 type (
 	EducationUsecase interface {
 		Create(ctx context.Context, req domain.EducationCreateRequest, userID string) error
+		Detail(ctx context.Context, educationID string) (domain.EducationDetailResponse, error)
 	}
 
 	educationUsecase struct {
@@ -65,4 +66,24 @@ func (u *educationUsecase) Create(ctx context.Context, req domain.EducationCreat
 	}
 
 	return nil
+}
+
+func (u *educationUsecase) Detail(ctx context.Context, educationID string) (domain.EducationDetailResponse, error) {
+	tx := u.db.WithContext(ctx)
+
+	res := domain.EducationDetailResponse{}
+
+	var education entity.Education
+	if err := u.educationRepo.FindByID(tx, educationID, &education); err != nil {
+		return res, err
+	}
+
+	res.ID = education.ID
+	res.School = education.School
+	res.Degree = education.Degree
+	res.Description = education.Description
+	res.StartDate = education.StartDate.Format(time.DateOnly)
+	res.EndDate = education.EndDate.Format(time.DateOnly)
+
+	return res, nil
 }

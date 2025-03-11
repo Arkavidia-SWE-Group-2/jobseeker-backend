@@ -11,5 +11,6 @@ func NewEducationRoute(api *fiber.App, handler handler.EducationHandler, middlew
 	router := api.Group("/educations")
 	{
 		router.Post("/", middleware.AuthMiddleware(), handler.Create)
+		router.Get("/:id", handler.Detail)
 	}
 }

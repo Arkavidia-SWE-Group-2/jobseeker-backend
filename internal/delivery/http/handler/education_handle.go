@@ -14,6 +14,7 @@ import (
 type (
 	EducationHandler interface {
 		Create(ctx *fiber.Ctx) error
+		Detail(ctx *fiber.Ctx) error
 	}
 
 	educationHandler struct {
@@ -43,4 +44,18 @@ func (h *educationHandler) Create(ctx *fiber.Ctx) error {
 	}
 
 	return response.NewSuccess(domain.EDUCATION_CREATE_SUCCESS, nil, nil).Send(ctx)
+}
+
+func (h *educationHandler) Detail(ctx *fiber.Ctx) error {
+	educationID := ctx.Params("id")
+	if educationID == "" {
+		return response.NewFailed(domain.EDUCATION_DETAIL_FAILED, domain.ErrInvalidParameter, h.logger).Send(ctx)
+	}
+
+	res, err := h.usecase.Detail(ctx.Context(), educationID)
+	if err != nil {
+		return response.NewFailed(domain.EDUCATION_DETAIL_FAILED, err, h.logger).Send(ctx)
+	}
+
+	return response.NewSuccess(domain.EDUCATION_DETAIL_SUCCESS, res, nil).Send(ctx)
 }

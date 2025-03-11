@@ -9,6 +9,7 @@ import (
 type (
 	EducationRepository interface {
 		Create(tx *gorm.DB, education *entity.Education) error
+		FindByID(tx *gorm.DB, id string, education *entity.Education) error
 	}
 
 	educationRepository struct {
@@ -25,4 +26,11 @@ func (r *educationRepository) Create(tx *gorm.DB, education *entity.Education) e
 		tx = r.db
 	}
 	return tx.Create(education).Error
+}
+
+func (r *educationRepository) FindByID(tx *gorm.DB, id string, education *entity.Education) error {
+	if tx == nil {
+		tx = r.db
+	}
+	return tx.Where("id = ?", id).First(education).Error
 }
