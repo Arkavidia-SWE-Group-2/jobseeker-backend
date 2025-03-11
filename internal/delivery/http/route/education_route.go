@@ -13,5 +13,6 @@ func NewEducationRoute(api *fiber.App, handler handler.EducationHandler, middlew
 		router.Post("/", middleware.AuthMiddleware(), handler.Create)
 		router.Get("/:id", handler.Detail)
 		router.Put("/:id", middleware.AuthMiddleware(), handler.Update)
+		router.Delete("/:id", middleware.AuthMiddleware(), handler.Delete)
 	}
 }

@@ -15,6 +15,7 @@ type (
 		Create(ctx context.Context, req domain.EducationCreateRequest, userID string) error
 		Detail(ctx context.Context, educationID string) (domain.EducationDetailResponse, error)
 		Update(ctx context.Context, req domain.EducationUpdateRequest, educationID, userID string) error
+		Delete(ctx context.Context, educationID, userID string) error
 	}
 
 	educationUsecase struct {
@@ -129,6 +130,42 @@ func (u *educationUsecase) Update(ctx context.Context, req domain.EducationUpdat
 
 	if err := u.educationRepo.Update(tx, educationID, &education); err != nil {
 		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
+func (u *educationUsecase) Delete(ctx context.Context, educationID, userID string) error {
+	tx := u.db.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+
+	exists, err := u.educationRepo.ExistsByIDAndUserID(tx, educationID, userID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if !exists {
+		tx.Rollback()
+		return domain.ErrEducationNotFound
+	}
+
+	if err := u.educationRepo.DeleteByID(tx, educationID); err != nil {
+		tx.Rollback()
+		if err == gorm.ErrRecordNotFound {
+			return domain.ErrEducationNotFound
+		}
 		return err
 	}
 

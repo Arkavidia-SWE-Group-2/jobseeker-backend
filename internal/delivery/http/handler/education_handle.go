@@ -16,6 +16,7 @@ type (
 		Create(ctx *fiber.Ctx) error
 		Detail(ctx *fiber.Ctx) error
 		Update(ctx *fiber.Ctx) error
+		Delete(ctx *fiber.Ctx) error
 	}
 
 	educationHandler struct {
@@ -82,4 +83,22 @@ func (h *educationHandler) Update(ctx *fiber.Ctx) error {
 	}
 
 	return response.NewSuccess(domain.EDUCATION_UPDATE_SUCCESS, nil, nil).Send(ctx)
+}
+
+func (h *educationHandler) Delete(ctx *fiber.Ctx) error {
+	educationID := ctx.Params("id")
+	if educationID == "" {
+		return response.NewFailed(domain.EDUCATION_DELETE_FAILED, domain.ErrInvalidParameter, h.logger).Send(ctx)
+	}
+
+	user, err := auth.ParseFromContext(ctx)
+	if err != nil {
+		return response.NewFailed(domain.EDUCATION_DELETE_FAILED, err, h.logger).Send(ctx)
+	}
+
+	if err := h.usecase.Delete(ctx.Context(), educationID, user.ID); err != nil {
+		return response.NewFailed(domain.EDUCATION_DELETE_FAILED, err, h.logger).Send(ctx)
+	}
+
+	return response.NewSuccess(domain.EDUCATION_DELETE_SUCCESS, nil, nil).Send(ctx)
 }

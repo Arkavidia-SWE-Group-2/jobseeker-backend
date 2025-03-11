@@ -21,6 +21,9 @@ var (
 
 	EDUCATION_UPDATE_SUCCESS = "Update education success"
 	EDUCATION_UPDATE_FAILED  = "Update education failed"
+
+	EDUCATION_DELETE_SUCCESS = "Delete education success"
+	EDUCATION_DELETE_FAILED  = "Delete education failed"
 )
 
 /**----------------------

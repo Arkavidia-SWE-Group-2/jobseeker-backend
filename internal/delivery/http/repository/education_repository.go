@@ -12,6 +12,8 @@ type (
 		Update(tx *gorm.DB, id string, education *entity.Education) error
 		FindByID(tx *gorm.DB, id string, education *entity.Education) error
 		FindByIDAndUserID(tx *gorm.DB, id, userID string, education *entity.Education) error
+		ExistsByIDAndUserID(tx *gorm.DB, id, userID string) (bool, error)
+		DeleteByID(tx *gorm.DB, id string) error
 	}
 
 	educationRepository struct {
@@ -49,4 +51,20 @@ func (r *educationRepository) FindByIDAndUserID(tx *gorm.DB, id, userID string, 
 		tx = r.db
 	}
 	return tx.Where("id = ? AND user_id = ?", id, userID).First(education).Error
+}
+
+func (r *educationRepository) ExistsByIDAndUserID(tx *gorm.DB, id, userID string) (bool, error) {
+	if tx == nil {
+		tx = r.db
+	}
+	var count int64
+	err := tx.Model(&entity.Education{}).Where("id = ? AND user_id = ?", id, userID).Count(&count).Error
+	return count > 0, err
+}
+
+func (r *educationRepository) DeleteByID(tx *gorm.DB, id string) error {
+	if tx == nil {
+		tx = r.db
+	}
+	return tx.Where("id = ?", id).Delete(&entity.Education{}).Error
 }
