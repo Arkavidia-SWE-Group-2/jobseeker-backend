@@ -15,6 +15,7 @@ type (
 	EducationHandler interface {
 		Create(ctx *fiber.Ctx) error
 		Detail(ctx *fiber.Ctx) error
+		Update(ctx *fiber.Ctx) error
 	}
 
 	educationHandler struct {
@@ -58,4 +59,27 @@ func (h *educationHandler) Detail(ctx *fiber.Ctx) error {
 	}
 
 	return response.NewSuccess(domain.EDUCATION_DETAIL_SUCCESS, res, nil).Send(ctx)
+}
+
+func (h *educationHandler) Update(ctx *fiber.Ctx) error {
+	educationID := ctx.Params("id")
+	if educationID == "" {
+		return response.NewFailed(domain.EDUCATION_UPDATE_FAILED, domain.ErrInvalidParameter, h.logger).Send(ctx)
+	}
+
+	var req domain.EducationUpdateRequest
+	if err := h.validator.ParseAndValidate(ctx, &req); err != nil {
+		return response.NewFailed(domain.EDUCATION_UPDATE_FAILED, err, h.logger).Send(ctx)
+	}
+
+	user, err := auth.ParseFromContext(ctx)
+	if err != nil {
+		return response.NewFailed(domain.EDUCATION_UPDATE_FAILED, err, h.logger).Send(ctx)
+	}
+
+	if err := h.usecase.Update(ctx.Context(), req, educationID, user.ID); err != nil {
+		return response.NewFailed(domain.EDUCATION_UPDATE_FAILED, err, h.logger).Send(ctx)
+	}
+
+	return response.NewSuccess(domain.EDUCATION_UPDATE_SUCCESS, nil, nil).Send(ctx)
 }

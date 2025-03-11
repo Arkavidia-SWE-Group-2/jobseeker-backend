@@ -1,5 +1,14 @@
 package domain
 
+import "github.com/gofiber/fiber/v2"
+
+/**----------------------
+ * ERROR
+ *------------------------**/
+var (
+	ErrEducationNotFound = fiber.NewError(fiber.StatusNotFound, "Education not found")
+)
+
 /**----------------------
  * MESSAGE
  *------------------------**/
@@ -9,6 +18,9 @@ var (
 
 	EDUCATION_DETAIL_SUCCESS = "Get education success"
 	EDUCATION_DETAIL_FAILED  = "Get education failed"
+
+	EDUCATION_UPDATE_SUCCESS = "Update education success"
+	EDUCATION_UPDATE_FAILED  = "Update education failed"
 )
 
 /**----------------------
@@ -22,6 +34,8 @@ type (
 		StartDate   string `json:"start_date" validate:"required"`
 		EndDate     string `json:"end_date" validate:"required"`
 	}
+
+	EducationUpdateRequest = EducationCreateRequest
 )
 
 /**----------------------

@@ -14,6 +14,7 @@ type (
 	EducationUsecase interface {
 		Create(ctx context.Context, req domain.EducationCreateRequest, userID string) error
 		Detail(ctx context.Context, educationID string) (domain.EducationDetailResponse, error)
+		Update(ctx context.Context, req domain.EducationUpdateRequest, educationID, userID string) error
 	}
 
 	educationUsecase struct {
@@ -75,6 +76,9 @@ func (u *educationUsecase) Detail(ctx context.Context, educationID string) (doma
 
 	var education entity.Education
 	if err := u.educationRepo.FindByID(tx, educationID, &education); err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return res, domain.ErrEducationNotFound
+		}
 		return res, err
 	}
 
@@ -86,4 +90,52 @@ func (u *educationUsecase) Detail(ctx context.Context, educationID string) (doma
 	res.EndDate = education.EndDate.Format(time.DateOnly)
 
 	return res, nil
+}
+
+func (u *educationUsecase) Update(ctx context.Context, req domain.EducationUpdateRequest, educationID, userID string) error {
+	tx := u.db.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+
+	var education entity.Education
+	if err := u.educationRepo.FindByIDAndUserID(tx, educationID, userID, &education); err != nil {
+		tx.Rollback()
+		if err == gorm.ErrRecordNotFound {
+			return domain.ErrEducationNotFound
+		}
+		return err
+	}
+
+	startDate, err := time.Parse(time.DateOnly, req.StartDate)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	endDate, err := time.Parse(time.DateOnly, req.EndDate)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	education.School = req.School
+	education.Degree = req.Degree
+	education.Description = req.Description
+	education.StartDate = startDate
+	education.EndDate = endDate
+
+	if err := u.educationRepo.Update(tx, educationID, &education); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
 }
