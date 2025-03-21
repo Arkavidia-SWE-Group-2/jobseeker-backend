@@ -14,6 +14,7 @@ type (
 		FindByIDAndUserID(tx *gorm.DB, id, userID string, education *entity.Education) error
 		ExistsByIDAndUserID(tx *gorm.DB, id, userID string) (bool, error)
 		DeleteByID(tx *gorm.DB, id string) error
+		GetAllByUserID(tx *gorm.DB, userID string) ([]entity.Education, error)
 	}
 
 	educationRepository struct {
@@ -67,4 +68,13 @@ func (r *educationRepository) DeleteByID(tx *gorm.DB, id string) error {
 		tx = r.db
 	}
 	return tx.Where("id = ?", id).Delete(&entity.Education{}).Error
+}
+
+func (r *educationRepository) GetAllByUserID(tx *gorm.DB, userID string) ([]entity.Education, error) {
+	if tx == nil {
+		tx = r.db
+	}
+	var educations []entity.Education
+	err := tx.Where("user_id = ?", userID).Find(&educations).Error
+	return educations, err
 }

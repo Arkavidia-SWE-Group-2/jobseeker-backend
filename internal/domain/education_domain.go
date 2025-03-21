@@ -24,6 +24,9 @@ var (
 
 	EDUCATION_DELETE_SUCCESS = "Delete education success"
 	EDUCATION_DELETE_FAILED  = "Delete education failed"
+
+	EDUCATION_GET_BY_USER_SUCCESS = "Get education by user success"
+	EDUCATION_GET_BY_USER_FAILED  = "Get education by user failed"
 )
 
 /**----------------------

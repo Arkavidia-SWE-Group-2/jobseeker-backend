@@ -17,6 +17,7 @@ type (
 		Detail(ctx *fiber.Ctx) error
 		Update(ctx *fiber.Ctx) error
 		Delete(ctx *fiber.Ctx) error
+		GetAllByUser(ctx *fiber.Ctx) error
 	}
 
 	educationHandler struct {
@@ -101,4 +102,18 @@ func (h *educationHandler) Delete(ctx *fiber.Ctx) error {
 	}
 
 	return response.NewSuccess(domain.EDUCATION_DELETE_SUCCESS, nil, nil).Send(ctx)
+}
+
+func (h *educationHandler) GetAllByUser(ctx *fiber.Ctx) error {
+	user, err := auth.ParseFromContext(ctx)
+	if err != nil {
+		return response.NewFailed(domain.EDUCATION_GET_BY_USER_FAILED, err, h.logger).Send(ctx)
+	}
+
+	res, err := h.usecase.GetAllByUser(ctx.Context(), user.ID)
+	if err != nil {
+		return response.NewFailed(domain.EDUCATION_GET_BY_USER_FAILED, err, h.logger).Send(ctx)
+	}
+
+	return response.NewSuccess(domain.EDUCATION_GET_BY_USER_SUCCESS, res, nil).Send(ctx)
 }

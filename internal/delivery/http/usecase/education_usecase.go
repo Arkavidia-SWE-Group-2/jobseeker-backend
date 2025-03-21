@@ -16,6 +16,7 @@ type (
 		Detail(ctx context.Context, educationID string) (domain.EducationDetailResponse, error)
 		Update(ctx context.Context, req domain.EducationUpdateRequest, educationID, userID string) error
 		Delete(ctx context.Context, educationID, userID string) error
+		GetAllByUser(ctx context.Context, userID string) ([]domain.EducationDetailResponse, error)
 	}
 
 	educationUsecase struct {
@@ -175,4 +176,27 @@ func (u *educationUsecase) Delete(ctx context.Context, educationID, userID strin
 	}
 
 	return nil
+}
+
+func (u *educationUsecase) GetAllByUser(ctx context.Context, userID string) ([]domain.EducationDetailResponse, error) {
+	tx := u.db.WithContext(ctx)
+
+	educations, err := u.educationRepo.GetAllByUserID(tx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]domain.EducationDetailResponse, 0, len(educations))
+	for _, education := range educations {
+		res = append(res, domain.EducationDetailResponse{
+			ID:          education.ID,
+			School:      education.School,
+			Degree:      education.Degree,
+			Description: education.Description,
+			StartDate:   education.StartDate.Format(time.DateOnly),
+			EndDate:     education.EndDate.Format(time.DateOnly),
+		})
+	}
+
+	return res, nil
 }
