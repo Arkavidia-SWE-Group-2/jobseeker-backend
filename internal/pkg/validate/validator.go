@@ -1,7 +1,6 @@
 package validate
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -43,7 +42,6 @@ func NewValidator() *Validator {
 
 func (v *Validator) ParseAndValidate(ctx *fiber.Ctx, req interface{}) error {
 	if err := ctx.BodyParser(req); err != nil {
-		fmt.Println("error disini")
 		return err
 	}
 

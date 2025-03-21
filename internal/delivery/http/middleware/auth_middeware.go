@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"jobseeker/internal/domain"
 	"jobseeker/internal/pkg/response"
 	"strings"
@@ -17,7 +16,6 @@ func (m *Middleware) AuthMiddleware() fiber.Handler {
 			return response.NewFailed("Unauthorized", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
 		}
 		subs := strings.Split(token, "Bearer ")
-		fmt.Println(subs)
 		if len(subs) != 2 {
 			return response.NewFailed("Unauthorized", fiber.NewError(fiber.StatusUnauthorized), nil).Send(ctx)
 		}
