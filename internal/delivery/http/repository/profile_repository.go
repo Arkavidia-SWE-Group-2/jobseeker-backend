@@ -9,6 +9,7 @@ import (
 type (
 	ProfileRepository interface {
 		GetProfileByVanity(tx *gorm.DB, vanity string, profile *entity.Profile) error
+		UpdateProfile(tx *gorm.DB, profile *entity.Profile) error
 	}
 
 	profileRepository struct {
@@ -33,5 +34,15 @@ func (r *profileRepository) GetProfileByVanity(tx *gorm.DB, vanity string, profi
 		return err
 	}
 
+	return nil
+}
+
+func (r *profileRepository) UpdateProfile(tx *gorm.DB, profile *entity.Profile) error {
+	if tx == nil {
+		tx = r.db
+	}
+	if err := tx.Where("user_id = ?", profile.UserID).Updates(profile).Error; err != nil {
+		return err
+	}
 	return nil
 }

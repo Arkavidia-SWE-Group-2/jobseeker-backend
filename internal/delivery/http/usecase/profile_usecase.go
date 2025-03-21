@@ -12,6 +12,7 @@ import (
 type (
 	ProfileUsecase interface {
 		GetProfile(ctx context.Context, vanity string) (domain.ProfileResponse, error)
+		UpdateProfile(ctx context.Context, req domain.ProfileEditRequest, userID string) error
 	}
 
 	profileUsecase struct {
@@ -44,4 +45,20 @@ func (p *profileUsecase) GetProfile(ctx context.Context, vanity string) (domain.
 	res.Vanity = vanity
 
 	return res, nil
+}
+
+func (p *profileUsecase) UpdateProfile(ctx context.Context, req domain.ProfileEditRequest, userID string) error {
+	var profile entity.Profile
+
+	profile.UserID = userID
+	profile.FirstName = req.FirstName
+	profile.LastName = req.LastName
+	profile.Headline = req.Headline
+	profile.About = req.About
+
+	if err := p.profileRepo.UpdateProfile(p.db, &profile); err != nil {
+		return err
+	}
+
+	return nil
 }
