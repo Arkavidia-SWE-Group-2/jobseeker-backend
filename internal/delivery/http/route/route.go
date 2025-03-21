@@ -15,6 +15,7 @@ type RouteConfig struct {
 	BaseHandler      handler.BaseHandler
 	AuthHandler      handler.AuthHandler
 	EducationHandler handler.EducationHandler
+	ProfileHandler   handler.ProfileHandler
 }
 
 func Setup(c *RouteConfig) {
@@ -27,4 +28,5 @@ func Setup(c *RouteConfig) {
 	NewBaseRoute(c.Api, c.BaseHandler, c.Middleware)
 	NewAuthRoute(c.Api, c.AuthHandler)
 	NewEducationRoute(c.Api, c.EducationHandler, c.Middleware)
+	NewProfileRoute(c.Api, c.ProfileHandler, c.Middleware)
 }

@@ -37,6 +37,7 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 	 *---------------------------------------------**/
 	authUsecase := usecase.NewAuthUsecase(conf.DB, conf.JWT, userRepo, profileRepo)
 	educationUsecase := usecase.NewEducationUsecase(conf.DB, educationRepo)
+	profileUsecase := usecase.NewProfileUsecase(conf.DB, profileRepo)
 
 	/**--------------------------------------------
 	**  HANDLERS
@@ -44,6 +45,7 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 	baseHandler := handler.NewBaseHandler()
 	authHandler := handler.NewAuthHandler(conf.Validator, conf.Log, authUsecase)
 	educationHandler := handler.NewEducationHandler(conf.Validator, conf.Log, educationUsecase)
+	profileHandler := handler.NewProfileHandler(conf.Validator, conf.Log, profileUsecase)
 
 	/**--------------------------------------------
 	**  MIDDLEWARE & ROUTE SETUP
@@ -55,5 +57,6 @@ func ApiBootstrap(conf *ApiBootstrapConfig) {
 		BaseHandler:      baseHandler,
 		AuthHandler:      authHandler,
 		EducationHandler: educationHandler,
+		ProfileHandler:   profileHandler,
 	})
 }

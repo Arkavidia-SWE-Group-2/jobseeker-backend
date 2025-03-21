@@ -1,9 +1,15 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"jobseeker/internal/entity"
+
+	"gorm.io/gorm"
+)
 
 type (
-	ProfileRepository interface{}
+	ProfileRepository interface {
+		GetProfileByVanity(tx *gorm.DB, vanity string, profile *entity.Profile) error
+	}
 
 	profileRepository struct {
 		db *gorm.DB
@@ -12,4 +18,20 @@ type (
 
 func NewProfileRepository(db *gorm.DB) ProfileRepository {
 	return &profileRepository{db}
+}
+
+func (r *profileRepository) GetProfileByVanity(tx *gorm.DB, vanity string, profile *entity.Profile) error {
+	if tx == nil {
+		tx = r.db
+	}
+	query := tx.
+		Joins("JOIN users ON users.id = profiles.user_id").
+		Where("users.vanity = ?", vanity).
+		Select("profiles.*")
+
+	if err := query.First(profile).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
