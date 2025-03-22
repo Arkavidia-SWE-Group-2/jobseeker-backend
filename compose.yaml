@@ -1,0 +1,22 @@
+services:
+  api:
+    container_name: arkav-jobseeker-api
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: ardhptr21/arkav-jobseeker-api
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    restart: on-failure
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./config.prod.yaml:/app/config.prod.yaml:ro
+      - ./keys:/app/keys:ro
+    networks:
+      - arkav-jobseeker
+
+networks:
+  arkav-jobseeker:
+    driver: bridge

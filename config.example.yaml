@@ -1,5 +1,5 @@
 app:
-  name: jobseeker-backend
+  name: arkav-jobseeker-api
 
 api:
   prefork: false
